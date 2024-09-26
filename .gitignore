@@ -1,2 +1,3 @@
-data/
 training2017/
+__pycache__/
+test.ipynb
