@@ -13,6 +13,15 @@ def get_one_hot(label, num_class=4):
         .scatter_(dim=0, index=torch.tensor(label), value=1)
     return one_hot
 
+
+def get_cinc2017_class(labels):
+    '''
+    decode the one-hot encoding to class
+    '''
+    label_dict = {0: 'N', 1: 'A', 2: 'O', 3: '~'}
+    return [label_dict[l.argmax().item()] for l in labels]
+
+
 def get_label(ann_dir):
     '''
     read the label file and return the label dataframe
@@ -23,10 +32,12 @@ def get_label(ann_dir):
     labels.replace(label_dict, inplace=True)
     return labels
 
+
 def get_data(ann_dir, ecg_dir, seg, sf):
     '''
     read all the ecg signals and segment them, then merge with the labels
     '''
+    # total points of each segment
     npo = seg * sf
 
     labels = get_label(ann_dir)
@@ -63,6 +74,7 @@ def get_data(ann_dir, ecg_dir, seg, sf):
 
     return seg_data
 
+
 def get_data_csv(ecg_dir='training2017', ann_dir='data/REFERENCE-v3.csv',
                  des=os.getcwd, seg=10, sf=300):
     '''
@@ -70,3 +82,10 @@ def get_data_csv(ecg_dir='training2017', ann_dir='data/REFERENCE-v3.csv',
     '''
     df = get_data(ann_dir, ecg_dir, seg, sf)
     df.to_csv(os.path.join(des, f'train_{seg}s.csv'), index=False)
+    
+
+
+
+
+
+

@@ -16,7 +16,6 @@ def conv_block(in_channels, out_channels, kernel_size,
     return nn.Sequential(*layers)
 
     
-
 def conv_net(arch, num_conv=2):
     '''
     network used in paper
