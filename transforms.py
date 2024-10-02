@@ -50,7 +50,7 @@ class Scale:
     
     
     def __call__(self, ecg):
-        return ecg * self.factor
+        return ecg * self.sf
 
 
 class VerticalFlip:
@@ -71,13 +71,16 @@ class VerticalFlip:
 class HorizontalFlip:
     '''
     invert the signal temporally
+    
+    note:
+        cannot receive tensor as parameter
     '''
     def __init__(self):
         pass
     
     
     def __call__(self, ecg):
-        return np.flip(ecg, axis=1)
+        return np.flip(ecg, axis=-1)
 
 
 class AddNoise:
@@ -86,6 +89,9 @@ class AddNoise:
     
     Args:
         snr(int/float): signal to noise ratio
+        
+    note:
+        the dtype of the return tensor will be forced to float64
     '''
     def __init__(self, snr):
         self.snr = snr
@@ -108,6 +114,9 @@ class Permute:
     
     Args:
         n(int): number of segments to be divided into
+        
+    note:
+        will return ndarray when receive tensor as parameter
     '''
     def __init__(self, n):
         self.n = n
@@ -126,6 +135,9 @@ class TimeWarp:
     Args:
         n(int): number of segments to be divided into
         sf(int/float): stretch factor(>1) or squeeze factor(<1)
+        
+    note:
+        will return ndarray when receive tensor as parameter
     '''
     def __init__(self, n, sf):
         self.n = n
