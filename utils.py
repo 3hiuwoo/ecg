@@ -1,5 +1,5 @@
 import torch
-
+import numpy as np
 
 def get_cinc2017_class(labels):
     '''
@@ -15,11 +15,6 @@ def normalize(arr):
     '''
     arr = (arr - arr.min()) / (arr.max() - arr.min())
     return arr
-
-    
-
-
-
 
 
 
