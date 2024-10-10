@@ -16,8 +16,7 @@ def ecg_conv_block(in_channels, out_channels, kernel_size,
     return nn.Sequential(*layers)
 
     
-def ecg_conv_net(arch, num_conv=2, fc=128, dropout=0.6, num_class=4,
-                 mpkernel=8, mpstride=2):
+def ecg_conv_net(arch, num_conv, fc, dropout, num_class, mpkernel, mpstride):
     '''
     generalized structure of the network proposed in the paper
     '''
@@ -27,12 +26,15 @@ def ecg_conv_net(arch, num_conv=2, fc=128, dropout=0.6, num_class=4,
         conv_blks.append(ecg_conv_block(in_channel, out_channel,
                                     kernel_size, num_conv))
         if idx < (len(arch) - 1):
-            conv_blks.append(nn.MaxPool1d(kernel_size=mpkernel, stride=mpstride))
+            conv_blks.append(nn.MaxPool1d(kernel_size=mpkernel,
+                                          stride=mpstride))
         in_channel = out_channel
     conv_blks.append(nn.AdaptiveMaxPool1d(1))
     return nn.Sequential(*conv_blks, nn.Flatten(), 
-                         nn.Linear(in_channel, fc), nn.ReLU(), nn.Dropout(dropout),
-                         nn.Linear(fc, fc), nn.ReLU(), nn.Dropout(dropout),
+                         nn.Linear(in_channel, fc), nn.ReLU(),
+                         nn.Dropout(dropout),
+                         nn.Linear(fc, fc), nn.ReLU(),
+                         nn.Dropout(dropout),
                          nn.Linear(fc, num_class))
     
     

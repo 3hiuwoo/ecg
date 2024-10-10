@@ -5,7 +5,11 @@ import torchmetrics
 import numpy as np
 import matplotlib.pyplot as plt
 
+
 def get_device():
+    '''
+    find the available device
+    '''
     return ("cuda"
     if torch.cuda.is_available()
     else "mps"
@@ -13,19 +17,11 @@ def get_device():
     else "cpu")
 
 
-def set_seed(seed):
-    random.seed(seed)
-    np.random.seed(seed)
-    torch.manual_seed(seed)
-    if torch.cuda.is_available():
-        torch.cuda.manual_seed(seed)
-        torch.cuda.manual_seed_all(seed)
-        torch.backends.cudnn.deterministic = True
-        torch.backends.cudnn.benchmark = False
-        
-
 def train_epoch(model, dataloader, optimizer, loss_fn,
                 metric, device=get_device()):
+    '''
+    train the model for one epoch
+    '''
     size = len(dataloader.dataset)
     model.train()
     total_loss = 0
@@ -55,6 +51,9 @@ def train_epoch(model, dataloader, optimizer, loss_fn,
 
 
 def valid_epoch(model, dataloader, metric, device=get_device()):
+    '''
+    validate the model for one epoch
+    '''
     model.eval()
     
     with torch.no_grad():
@@ -67,10 +66,14 @@ def valid_epoch(model, dataloader, metric, device=get_device()):
     print(f"Valid accuracy: {valid_acc:.2f}")
     metric.reset()
 
+    return valid_acc
     
     
-def my_train(model, train_iter, valid_iter, optimizer,
-             loss_fn, epochs, device=get_device()):
+def my_train(model, train_iter, valid_iter, optimizer, loss_fn,
+             epochs=1, device=get_device()):
+    '''
+    simple function for training
+    '''
     def init_weights(m):
         if type(m) == nn.Conv1d or type(m) == nn.Linear:
             nn.init.xavier_uniform_(m.weight)
