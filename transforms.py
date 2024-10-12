@@ -1,7 +1,6 @@
 import random
 import torch
 import numpy as np
-from utils import normalize
 from scipy.interpolate import interp1d
 
 
@@ -14,6 +13,14 @@ def to_one_hot(label, num_class=4):
     return one_hot
 
 
+def normalize(arr):
+    '''
+    normalize the array by x = (x - x.min()) / (x.max() - x.min())
+    '''
+    arr = (arr - arr.min()) / (arr.max() - arr.min())
+    return arr
+
+
 class ToTensor:
     '''
     convert ndarrays to Tensors
@@ -23,7 +30,8 @@ class ToTensor:
     
     
     def __call__(self, ecg):
-        return torch.from_numpy(ecg)
+        ecg = torch.from_numpy(ecg)
+        return ecg.to(torch.float32)
     
     
 class Normalize:

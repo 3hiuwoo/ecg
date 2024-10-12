@@ -1,21 +1,18 @@
 import torch
+from torch import nn
 import numpy as np
 import random
 
-def get_cinc2017_class(labels):
+def get_device():
     '''
-    decode the one-hot encoding to class
+    find the available device
     '''
-    label_dict = {0: 'N', 1: 'A', 2: 'O', 3: '~'}
-    return [label_dict[l.argmax().item()] for l in labels]
-
-
-def normalize(arr):
-    '''
-    normalize the array by x = (x - x.min()) / (x.max() - x.min())
-    '''
-    arr = (arr - arr.min()) / (arr.max() - arr.min())
-    return arr
+    return ("cuda"
+    if torch.cuda.is_available()
+    else "mps"
+    if torch.backends.mps.is_available()
+    else "cpu")
+    
 
 def set_seed(seed):
     '''
@@ -30,3 +27,7 @@ def set_seed(seed):
         torch.backends.cudnn.deterministic = True
         torch.backends.cudnn.benchmark = False
 
+
+def init_weights(m):
+        if type(m) == nn.Conv1d or type(m) == nn.Linear:
+            nn.init.xavier_uniform_(m.weight)

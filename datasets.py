@@ -51,7 +51,7 @@ class CINC2017Dataset(Dataset):
         labels = pd.read_csv(ann_dir, header=None)
         labels.columns = ['head', 'label']
         label_dict = {'N': 0, 'A': 1, 'O': 2, '~': 3}
-        labels.replace(label_dict, inplace=True)
+        labels = labels.replace(label_dict)
         return labels
 
 
@@ -128,3 +128,14 @@ def load_cinc2017(batch_size, ratio=0.8, shuffle=True,
     
     return train_iter, valid_iter
     
+    
+def get_cinc2017_class(label, one_hot=False):
+    '''
+    decode the one-hot encoding to class
+    
+    Args:
+        label(array): a single label
+        one_hot(bool, optional): specify whether the labels are one-hot encoded.
+    '''
+    label_dict = {0: 'N', 1: 'A', 2: 'O', 3: '~'}
+    return label_dict[label.argmax()] if one_hot else label_dict[label]
