@@ -4,7 +4,7 @@ import warnings
 from torch import nn
 from torch import optim
 from datasets import load_cinc2017
-from models import SupervisedConv
+from models.supervised import SupervisedConv
 from trainers import train
 
 if __name__ == '__main__':
