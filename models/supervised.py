@@ -3,8 +3,7 @@ from models.base import conv_backbone, classifier
 
 
 class SupervisedConv(nn.Module):
-    '''
-    supervised convolutional neural network
+    '''supervised convolutional neural network
     
     Args: Please refer to the functions' doc used in the implementation
     '''

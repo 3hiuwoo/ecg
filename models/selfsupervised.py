@@ -1,10 +1,10 @@
+import torch
 from torch import nn
 from models.base import conv_backbone, classifier
 
 
 class SSLConvPred(nn.Module):
-    '''
-    self-supervised convolutional neural network
+    '''self-supervised convolutional neural network
     
     Args:
         num_trans(int): number of transformations applied on the input signal
@@ -26,8 +26,7 @@ class SSLConvPred(nn.Module):
         
     def forward(self, x):
         outputs = []
+        x = self.backbone(x)
         for i in range(len(self.classifier)):
-            x = self.backbone(x)
-            x = self.classifier[f'head_{i}'](x)
-            outputs.append(x)
-        return outputs
+            outputs.append(self.classifier[f'head_{i}'](x))
+        return torch.stack(outputs, dim=0)
