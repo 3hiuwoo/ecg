@@ -1,3 +1,9 @@
+'''
+run this script to train a model under predictive pretext task SSL paradigm.
+use python train_predictive.py --help/-h to get argument information.
+remember to specify the ''logdir'' which is used for tensorboard and the
+''savepath'' to save the model.
+'''
 import utils.transform as transform
 import warnings
 from torch import nn
@@ -35,6 +41,7 @@ if __name__ == '__main__':
     ]
     trans = Compose([transform.ToGroup(tranls), transform.ToTensor()])
 
+    # no need for validation set
     train_iter, _ = load_fn(batch_size=batch_size, ratio=1, transform=trans)
  
     loss_fn = nn.CrossEntropyLoss()

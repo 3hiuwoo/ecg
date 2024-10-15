@@ -18,6 +18,7 @@ class SSLConvPred(nn.Module):
         self.backbone = conv_backbone(conv_groups, num_conv, mpkernel, mpstride)
         # output shape of the backbone network
         backbone_features = conv_groups[-1][0]
+        # classifiers for each transformation
         self.classifier = nn.ModuleDict(
             {f'head_{i}': classifier(backbone_features, backbone_features,
                                      num_class=2, num_fc=num_fc,

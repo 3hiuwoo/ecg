@@ -33,13 +33,21 @@ def set_seed(seed):
 
 
 def init_weights(m):
-        if type(m) == nn.Conv1d or type(m) == nn.Linear:
-            nn.init.xavier_uniform_(m.weight)
+    '''
+    initialize the weights of the model
+    '''
+    if type(m) == nn.Conv1d or type(m) == nn.Linear:
+        nn.init.xavier_uniform_(m.weight)
             
             
 def get_pseudo_label(batch_size, num_tran):
     '''
     get the pseudo label for predictive SSL
+    
+    the pseudo label is a tensor of shape (num_tran, batch_size) to match a
+    desired output shape of the model of (num_tran, batch_size, 2), each tensor
+    of the dimension 1 corresponds to the desired output of one of the
+    classifiers of the multi-head model.
     '''
     pseudo_label = torch.ones((num_tran, num_tran, 2))
     pseudo_label[..., 1] = 0
@@ -50,6 +58,9 @@ def get_pseudo_label(batch_size, num_tran):
 
 
 def get_options():
+    '''
+    fetch the arguments from the terminal
+    '''
     parser = argparse.ArgumentParser(description='training settings')
     
     parser.add_argument('--batch_size', type=int, default=128,
@@ -89,6 +100,9 @@ class Visualizer:
         
         
     def write(self, step, **kwargs):
+        '''
+        write the metrics dictionary to tensorboard and terminal
+        '''
         metrics = ' '.join([f'{k}: {v:.2f}' for k, v in kwargs.items()])
         tqdm.write(metrics)
         

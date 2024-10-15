@@ -1,3 +1,9 @@
+'''
+run this script to train a supervised model.
+use python train_supervised.py --help/-h to get argument information.
+remember to specify the ''logdir'' which is used for tensorboard and the
+''savepath'' to save the model.
+'''
 import utils.transform as transform
 import warnings
 from torch import nn
