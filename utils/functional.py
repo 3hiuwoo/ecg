@@ -93,21 +93,56 @@ class Visualizer:
     Args:
         log_dir(str, optional): the directory to save tensorboard log files
     '''
-    def __init__(self, log_dir='runs'):
-        if os.path.exists(log_dir):
-            os.system(f'rm -rf {log_dir}')
+    def __init__(self, log_dir='runs', overwrite=False):
+        if overwrite:
+            os.system(f'rm -r {log_dir}')
         self.writer = SummaryWriter(log_dir)
         
         
-    def write(self, step, **kwargs):
+    def write(self, title, step, **kwargs):
         '''
         write the metrics dictionary to tensorboard and terminal
         '''
         metrics = ' '.join([f'{k}: {v:.2f}' for k, v in kwargs.items()])
         tqdm.write(metrics)
         
-        self.writer.add_scalars('Loss&Acc', kwargs, step)
+        self.writer.add_scalars(title, kwargs, step)
 
 
     def close(self):
         self.writer.close()
+        
+        
+class Logger:
+    '''
+    manage multiple checkpoints
+    '''
+    def __init__(self, log_dir='logs'):
+        self.log_dir = log_dir
+        self.name = log_dir.split('/')[-1]
+
+    
+    def save(self, model, optimizer, epoch):
+        checkpoint = {
+            'epoch': epoch,
+            'model_state_dict': model.state_dict(),
+            'optimizer_state_dict': optimizer.state_dict(),
+        }
+        path = os.path.join(self.log_dir, f'{self.name}_{epoch+1}.pth')
+        torch.save(checkpoint, path)
+        
+        
+    def load(self):
+        latest = self._find_latest()
+        checkpoint = torch.load(os.path.join(self.log_dir, latest))
+        return checkpoint
+    
+    
+    def _find_latest(self):
+        '''
+        find the latest checkpoint
+        '''
+        files = os.listdir(self.log_dir)
+        latest = max(files, key=lambda x: int(x.split('_')[-1].split('.')[0]))
+        return latest
+        

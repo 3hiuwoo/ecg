@@ -2,7 +2,8 @@ import torch
 from tqdm import tqdm
 from torchmetrics import Accuracy, MetricCollection
 from utils import transform
-from utils.functional import get_device, init_weights, Visualizer, get_pseudo_label
+from utils.functional import get_device, init_weights, Visualizer,\
+                            get_pseudo_label, Logger
 
 
 def train_epoch_supervised(model, train_iter, optimizer, loss_fn, metric,
@@ -65,9 +66,12 @@ def train_supervised(model, train_iter, valid_iter, optimizer, loss_fn, epochs,
     '''
     the training process for supervised learning paradigm
     '''
+    model.to(device)
+    
     # resume training from the checkpoint
+    logger = Logger(check_path)
     if resume:
-        checkpoint = torch.load(check_path, weights_only=True)
+        checkpoint = logger.load()
         model.load_state_dict(checkpoint['model_state_dict'])
         optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
         start_epoch = checkpoint['epoch']
@@ -75,10 +79,8 @@ def train_supervised(model, train_iter, valid_iter, optimizer, loss_fn, epochs,
         model.apply(init_weights)
         start_epoch = -1
     
-    model.to(device)
-    
     # for printing metrics of an epoch and plotting on the tensorboard
-    visualizer = Visualizer(log_dir=log_dir)
+    visualizer = Visualizer(log_dir=log_dir, overwrite=not resume)
     
     train_accuracy = Accuracy(task='multiclass', num_classes=4).to(device)
     valid_accuracy = Accuracy(task='multiclass', num_classes=4).to(device)
@@ -91,16 +93,12 @@ def train_supervised(model, train_iter, valid_iter, optimizer, loss_fn, epochs,
         valid_acc = valid_epoch_supervised(model, valid_iter, valid_accuracy,
                                            epoch, epochs, device)
         
-        visualizer.write(epoch, train_accuracy=train_acc, train_loss=train_loss,
-                         valid_accuracy=valid_acc)
+        visualizer.write('Loss&Acc', epoch, train_loss=train_loss,
+                         train_accuracy=train_acc, valid_accuracy=valid_acc)
         
         # save the model
         if (epoch+1) % check == 0:
-            torch.save({
-                'epoch': epoch,
-                'model_state_dict': model.state_dict(),
-                'optimizer_state_dict': optimizer.state_dict(),
-            }, check_path)
+            logger.save(model, optimizer, epoch)
 
     visualizer.close()
     print('Training finished')
@@ -155,21 +153,21 @@ def train_predictive(model, train_iter, trans_name, optimizer, loss_fn, epochs,
     '''
     the training process for predictive pretext task SSL paradigm
     '''
+    model.to(device)
+    
     # resume training from the checkpoint
+    logger = Logger(check_path)
     if resume:
-        checkpoint = torch.load(check_path, weights_only=True)
-        model.backbone.load_state_dict(checkpoint['model_backbone_state_dict'])
-        model.classifier.load_state_dict(checkpoint['model_classifier_state_dict'])
+        checkpoint = logger.load()
+        model.load_state_dict(checkpoint['model_state_dict'])
         optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
         start_epoch = checkpoint['epoch']
     else:
         model.apply(init_weights)
         start_epoch = -1
-        
-    model.to(device)
-    
+
     # for printing metrics of an epoch and plotting them on the tensorboard
-    visualizer = Visualizer(log_dir=log_dir)
+    visualizer = Visualizer(log_dir=log_dir, overwrite=not resume)
     
     # dictionary of accuracies for each classifier
     metrics = MetricCollection({tran: Accuracy(task='multiclass', num_classes=2)
@@ -182,16 +180,11 @@ def train_predictive(model, train_iter, trans_name, optimizer, loss_fn, epochs,
                                         optimizer, loss_fn, trans_name, metrics,
                                         epoch, epochs, device)
         
-        visualizer.write(epoch, loss=total_loss, **total_metrics)
+        visualizer.write('Loss&Acc', epoch, loss=total_loss, **total_metrics)
         
         # save the model whose backbone and classifier are saved separately
         if (epoch+1) % check == 0:
-            torch.save({
-                'epoch': epoch,
-                'model_backbone_state_dict': model.backbone.state_dict(),
-                'model_classifier_state_dict': model.classifier.state_dict(),
-                'optimizer_state_dict': optimizer.state_dict(),
-            }, check_path)
+            logger.save(model, optimizer, epoch)
     
     visualizer.close()
     print('Training finished')
