@@ -57,7 +57,7 @@ def get_pseudo_label(batch_size, num_tran):
     return pseudo_label.repeat(1, batch_size, 1).argmax(-1)
 
 
-def get_options():
+def get_options(transfer=False):
     '''
     fetch the arguments from the terminal
     '''
@@ -78,10 +78,14 @@ def get_options():
     parser.add_argument('--logdir', type=str, default='./runs',
                         help='directory to save tensorboard log files')
     parser.add_argument('--savepath', type=str,
-                        default='./model_state_dict/model_tmp.pth',
+                        default='./weights/model_tmp.pth',
                         help='path to save the model')
     parser.add_argument('--resume', action='store_true',
                         help='resume training from checkpoint')
+    if transfer:
+        parser.add_argument('--bbroot', type=str,
+                            default='./weights/model_tmp.pth',
+                            help='path of pretrained model')
     
     return parser.parse_args()
     
@@ -150,3 +154,8 @@ class Logger:
         latest = max(files, key=lambda x: int(x.split('_')[-1].split('.')[0]))
         return latest
         
+        
+def init_model(model, root):
+    weights = torch.load(root, map_location=get_device())
+    model.backbone = weights['backbone']
+    model.classifier.apply(init_weights)

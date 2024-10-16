@@ -42,7 +42,7 @@ if __name__ == '__main__':
     trans = Compose([transform.ToGroup(tranls), transform.ToTensor()])
 
     # no need for validation set
-    train_iter, _ = load_fn(batch_size=batch_size, ratio=1, transform=trans)
+    train_iter, _ = load_fn(batch_size=batch_size, transform=trans)
  
     loss_fn = nn.CrossEntropyLoss()
 

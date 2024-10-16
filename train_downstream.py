@@ -5,14 +5,14 @@ from torch import optim
 from datasets.load import load_dataset
 from models.load import load_model
 from utils.trainer import train_supervised
-from utils.functional import get_options, set_seed
+from utils.functional import get_options, set_seed, init_model
 
 
 if __name__ == '__main__':
     # ignore trivial warnings
     warnings.filterwarnings("ignore")
     
-    opt = get_options()
+    opt = get_options(transfer=True)
     
     # by default use a batch size of 128, 100 epochs, and a learning rate of
     # 0.001, and set the random seed to 42, use the cinc2017 dataset, and the
@@ -26,13 +26,16 @@ if __name__ == '__main__':
     log_dir = opt.logdir
     save_path = opt.savepath
     resume = opt.resume
+    root = opt.bbroot
+    
+    init_model(model, root)
     
     train_iter, valid_iter = load_fn(batch_size=batch_size, 
                                      transform=transform.ToTensor())
 
     loss_fn = nn.CrossEntropyLoss()
 
-    optimizer = optim.Adam(model.parameters(), lr=learning_rate)
+    optimizer = optim.Adam(model.classifier.parameters(), lr=learning_rate)
 
     train_supervised(model, train_iter, valid_iter, optimizer, loss_fn, epochs,
           log_dir, save_path, resume=resume)
