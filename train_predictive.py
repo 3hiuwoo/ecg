@@ -12,7 +12,7 @@ from torchvision.transforms import Compose
 from datasets.load import load_dataset
 from models.load import load_model
 from utils.trainer import train_predictive
-from utils.functional import get_options, set_seed
+from utils.functional import get_options, set_seed, init_weights
 
 
 if __name__ == '__main__':
@@ -51,6 +51,9 @@ if __name__ == '__main__':
     acc_names = ['acc_origin', 'acc_noise', 'acc_scale', 'acc_vflip',
                  'acc_hflip', 'acc_permute', 'acc_warp']
 
+    if not resume:
+        model.apply(init_weights)
+    
     train_predictive(model, train_iter, acc_names, optimizer, loss_fn, epochs,
                      log_dir, save_path, resume=resume)
     

@@ -11,7 +11,7 @@ from torch import optim
 from datasets.load import load_dataset
 from models.load import load_model
 from utils.trainer import train_supervised
-from utils.functional import get_options, set_seed
+from utils.functional import get_options, set_seed, init_weights
 
 
 if __name__ == '__main__':
@@ -40,6 +40,9 @@ if __name__ == '__main__':
 
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 
+    if not resume:
+        model.apply(init_weights)
+        
     train_supervised(model, train_iter, valid_iter, optimizer, loss_fn, epochs,
           log_dir, save_path, resume=resume)
 
