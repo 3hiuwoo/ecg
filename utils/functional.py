@@ -118,6 +118,8 @@ class Logger:
     manage multiple checkpoints
     '''
     def __init__(self, log_dir='logs'):
+        if not os.path.exists(log_dir):
+            os.makedirs(log_dir)
         self.log_dir = log_dir
         self.name = log_dir.split('/')[-1]
 
@@ -125,16 +127,18 @@ class Logger:
     def save(self, model, optimizer, epoch):
         checkpoint = {
             'epoch': epoch,
-            'model_state_dict': model.state_dict(),
+            'backbone_state_dict': model.backbone.state_dict(),
+            'classifier_state_dict': model.classifier.state_dict(),
             'optimizer_state_dict': optimizer.state_dict(),
         }
         path = os.path.join(self.log_dir, f'{self.name}_{epoch+1}.pth')
         torch.save(checkpoint, path)
         
         
-    def load(self):
+    def load(self, device=get_device()):
         latest = self._find_latest()
-        checkpoint = torch.load(os.path.join(self.log_dir, latest))
+        checkpoint = torch.load(os.path.join(self.log_dir, latest),
+                                map_location=device)
         return checkpoint
     
     

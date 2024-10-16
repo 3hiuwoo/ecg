@@ -74,7 +74,6 @@ def train_supervised(model, train_iter, valid_iter, optimizer, loss_fn, epochs,
         optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
         start_epoch = checkpoint['epoch']
     else:
-        model.apply(init_weights)
         start_epoch = -1
     
     # for printing metrics of an epoch and plotting on the tensorboard
@@ -159,7 +158,6 @@ def train_predictive(model, train_iter, trans_name, optimizer, loss_fn, epochs,
         optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
         start_epoch = checkpoint['epoch']
     else:
-        model.apply(init_weights)
         start_epoch = -1
 
     # for printing metrics of an epoch and plotting them on the tensorboard

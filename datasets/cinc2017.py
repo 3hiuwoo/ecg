@@ -126,8 +126,7 @@ def load_cinc2017(batch_size, ratio=0.8, shuffle=True,
     train_size = int(ratio * len(dataset))
     valid_size = len(dataset) - train_size
     train_dataset, valid_dataset = random_split(
-        dataset,[train_size, valid_size],
-        generator = torch.Generator().manual_seed(0))
+        dataset,[train_size, valid_size])
     
     train_iter = DataLoader(train_dataset, batch_size=batch_size, shuffle=shuffle)
     valid_iter = DataLoader(valid_dataset, batch_size=batch_size, shuffle=shuffle)
