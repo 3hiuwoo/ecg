@@ -66,8 +66,6 @@ def train_supervised(model, train_iter, valid_iter, optimizer, loss_fn, epochs,
     '''
     the training process for supervised learning paradigm
     '''
-    model.to(device)
-    
     # resume training from the checkpoint
     logger = Logger(check_path)
     if resume:
@@ -153,8 +151,6 @@ def train_predictive(model, train_iter, trans_name, optimizer, loss_fn, epochs,
     '''
     the training process for predictive pretext task SSL paradigm
     '''
-    model.to(device)
-    
     # resume training from the checkpoint
     logger = Logger(check_path)
     if resume:
@@ -174,8 +170,6 @@ def train_predictive(model, train_iter, trans_name, optimizer, loss_fn, epochs,
                                 for tran in trans_name}).to(device)
     
     for epoch in range(start_epoch+1, epochs):
-        model.train()
-        
         total_loss, total_metrics = train_predictive_epoch(model, train_iter,
                                         optimizer, loss_fn, trans_name, metrics,
                                         epoch, epochs, device)

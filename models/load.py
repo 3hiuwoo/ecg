@@ -1,6 +1,6 @@
 from .selfsupervised import SSLConvPred
 from .supervised import SupervisedConv
-
+from utils.functional import get_device
 
 def load_model(name, mode):
     '''
@@ -8,6 +8,6 @@ def load_model(name, mode):
     '''
     if name == 'conv':
         if mode == 'supervised':
-            return SupervisedConv()
+            return SupervisedConv().to(get_device())
         elif mode == 'predictive':
-            return SSLConvPred()
+            return SSLConvPred().to(get_device())
