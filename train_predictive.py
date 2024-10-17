@@ -32,12 +32,13 @@ if __name__ == '__main__':
     model = load_model(opt.model, 'predictive')
     log_dir = opt.logdir
     save_path = opt.savepath
+    check = opt.check
     resume = opt.resume
     
     tranls = [
         transform.AddNoise(15), transform.Scale(0.9),
         transform.VerticalFlip(), transform.HorizontalFlip(),
-        transform.Permute(7), transform.TimeWarp(3, 1.05)
+        transform.Permute(20), transform.TimeWarp(9, 1.05)
     ]
     trans = Compose([transform.ToGroup(tranls), transform.ToTensor()])
 
@@ -55,7 +56,7 @@ if __name__ == '__main__':
         model.apply(init_weights)
     
     train_predictive(model, train_iter, acc_names, optimizer, loss_fn, epochs,
-                     log_dir, save_path, resume=resume)
+                     log_dir, save_path, check, resume=resume)
     
     
     

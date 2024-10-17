@@ -1,1 +1,1 @@
-__all__ = ['base', 'supervised', 'selfsupervised']
+__all__ = ['load', 'base', 'supervised', 'selfsupervised']

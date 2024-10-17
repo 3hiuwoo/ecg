@@ -41,9 +41,6 @@ def valid_epoch_supervised(model, valid_iter, metric, epoch, epochs, device):
     '''
     validate the model for one epoch under supervised learning paradigm
     '''
-    if valid_iter is None:
-        return None
-    
     model.eval()
     with torch.no_grad():
         # initialize the progress bar
@@ -113,7 +110,8 @@ def train_predictive_epoch(model, train_iter, optimizer, loss_fn, trans, metrics
     '''
     model.train()
     total_loss = 0
-    
+    weight = torch.tensor([0.195, 0.195, 0.195, 0.0125, 0.0125, 0.195, 0.195],
+                          dtype=torch.float32).to(device)
     # initialize the progress bar
     tbar = tqdm(train_iter, desc=f"Epoch [{epoch+1}/{epochs}] training")
     for X, _ in tbar:
@@ -126,7 +124,7 @@ def train_predictive_epoch(model, train_iter, optimizer, loss_fn, trans, metrics
         
         for i, tran in enumerate(trans):
             sub_loss = loss_fn(pred[i], y[i])
-            loss += sub_loss
+            loss += weight[i] * sub_loss
             metrics[tran].update(pred[i], y[i])
             
         loss.backward()

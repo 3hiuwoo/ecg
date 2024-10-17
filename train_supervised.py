@@ -31,6 +31,7 @@ if __name__ == '__main__':
     model = load_model(opt.model, 'supervised')
     log_dir = opt.logdir
     save_path = opt.savepath
+    check = opt.check
     resume = opt.resume
     
     train_iter, valid_iter = load_fn(batch_size=batch_size, 
@@ -44,5 +45,5 @@ if __name__ == '__main__':
         model.apply(init_weights)
         
     train_supervised(model, train_iter, valid_iter, optimizer, loss_fn, epochs,
-          log_dir, save_path, resume=resume)
+          log_dir, save_path, check, resume=resume)
 

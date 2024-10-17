@@ -33,8 +33,10 @@ class CINC2017Dataset(Dataset):
         self.data = pd.merge(self.segments, self.label, on='head')
         self.classes = ['N', 'A', 'O', '~']
       
+      
     def __len__(self):
         return len(self.data)
+        
         
     def __getitem__(self, idx):
         ecg = self.data.iloc[idx, 1:-1].values.astype(float)
@@ -108,7 +110,7 @@ class CINC2017Dataset(Dataset):
         self.data.to_csv(root)
         
 
-def load_cinc2017(batch_size, ratio=0.8, shuffle=True,
+def load_cinc2017(batch_size, ratio=0.9, shuffle=True,
                   root='training2017', ann_dir='data/REFERENCE-v3.csv',
                   seg=10, stride=5, sf=300,
                   transform=None, target_transform=None):

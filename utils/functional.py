@@ -71,6 +71,8 @@ def get_options(transfer=False):
                         help='learning rate')
     parser.add_argument('--seed', type=int, default=42,
                         help='set random seed')
+    parser.add_argument('--check', type=int, default=5,
+                        help='save the model every CHECK epochs')
     parser.add_argument('--dataset', type=str, default='cinc2017',
                         help='dataset used for training')
     parser.add_argument('--model', type=str, default='conv',
@@ -157,5 +159,5 @@ class Logger:
         
 def init_model(model, root):
     weights = torch.load(root, map_location=get_device())
-    model.backbone = weights['backbone']
+    model.backbone.load_state_dict(weights['backbone_state_dict'])
     model.classifier.apply(init_weights)
