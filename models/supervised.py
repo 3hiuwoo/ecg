@@ -13,7 +13,7 @@ class SupervisedConv(nn.Module):
         if conv_groups is None:
             conv_groups = [(32, 32), (64, 16), (128, 8)]
         self.backbone = conv_backbone(conv_groups, num_conv, mpkernel, mpstride)
-        self.classifier = classifier(hidden, hidden,
+        self.classifier = classifier(conv_groups[-1][0], hidden,
                                      num_class, num_fc, dropout)
         
         

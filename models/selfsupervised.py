@@ -18,7 +18,7 @@ class SSLConvPred(nn.Module):
         self.backbone = conv_backbone(conv_groups, num_conv, mpkernel, mpstride)
         # classifiers for each transformation
         self.classifier = nn.ModuleDict(
-            {f'head_{i}': classifier(hidden, hidden,
+            {f'head_{i}': classifier(conv_groups[-1][0], hidden,
                                      num_class=2, num_fc=num_fc,
                                      dropout=dropout)
              for i in range(num_trans+1)})
