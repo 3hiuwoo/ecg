@@ -1,3 +1,4 @@
+import shutil
 import torch
 import os
 import argparse
@@ -71,22 +72,20 @@ def get_options(transfer=False):
                         help='learning rate')
     parser.add_argument('--seed', type=int, default=42,
                         help='set random seed')
-    parser.add_argument('--check', type=int, default=5,
+    parser.add_argument('--check', type=int, default=10,
                         help='save the model every CHECK epochs')
     parser.add_argument('--dataset', type=str, default='cinc2017',
                         help='dataset used for training')
     parser.add_argument('--model', type=str, default='conv',
                         help='model used for training')
-    parser.add_argument('--logdir', type=str, default='./runs',
+    parser.add_argument('--logdir', type=str, required=True,
                         help='directory to save tensorboard log files')
-    parser.add_argument('--savepath', type=str,
-                        default='./weights/model_tmp.pth',
+    parser.add_argument('--savepath', type=str, required=True,
                         help='path to save the model')
     parser.add_argument('--resume', action='store_true',
                         help='resume training from checkpoint')
     if transfer:
-        parser.add_argument('--bbroot', type=str,
-                            default='./weights/model_tmp.pth',
+        parser.add_argument('--bbroot', type=str, required=True,
                             help='path of pretrained model')
     
     return parser.parse_args()
@@ -99,9 +98,10 @@ class Visualizer:
     Args:
         log_dir(str, optional): the directory to save tensorboard log files
     '''
-    def __init__(self, log_dir='runs', overwrite=False):
-        if overwrite:
-            os.system(f'rm -r {log_dir}')
+    def __init__(self, log_dir, overwrite=False):
+        if overwrite and os.path.exists(log_dir):
+            shutil.rmtree(log_dir)
+
         self.writer = SummaryWriter(log_dir)
         
         
@@ -123,11 +123,11 @@ class Logger:
     '''
     manage multiple checkpoints
     '''
-    def __init__(self, log_dir='logs'):
+    def __init__(self, log_dir):
         if not os.path.exists(log_dir):
             os.makedirs(log_dir)
         self.log_dir = log_dir
-        self.name = log_dir.split('/')[-1]
+        self.name = os.path.basename(log_dir)
 
     
     def save(self, model, optimizer, epoch):

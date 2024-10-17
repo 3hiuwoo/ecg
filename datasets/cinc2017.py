@@ -1,7 +1,6 @@
 import os
 import pandas as pd
 import numpy as np
-import torch
 from torch.utils.data import Dataset, DataLoader, random_split
 from wfdb import rdrecord
 
@@ -10,12 +9,9 @@ class CINC2017Dataset(Dataset):
     '''CINC2017 Dataset
     
     Args:
-        root(str/'pathlib.Path', optional): Root directory of dataset fold, 
+        root(path, optional): Root directory of dataset fold, 
             which has regular name 'training2017', will search in present
             directory by default.
-        ann_dir(str/'pathlib/Path', optional): Root directory of the csv file
-            including each signal's label, will search in present directory by
-            default.
         seg(int, optional): specify how long is each segmented signal.
         stride(int, optional): specify the stride of the sliding window.
         sf(int, optional): sample rate of the signals, which is 300Hz in CINC2017.
@@ -24,11 +20,11 @@ class CINC2017Dataset(Dataset):
         target_transform (callable, optional): A function/transform that takes
             in the target and transforms it.
     '''
-    def __init__(self, root='training2017', ann_dir='data/REFERENCE-v3.csv',
-                 seg=10, stride=5, sf=300, transform=None, target_transform=None):
+    def __init__(self, root='training2017', seg=10, stride=5, sf=300,
+                 transform=None, target_transform=None):
         self.transform = transform
         self.target_transform = target_transform
-        self.label = self._load_label(ann_dir)
+        self.label = self._load_label(root)
         self.segments = self._load_data(root=root, seg=seg, stride=stride, sf=sf)
         self.data = pd.merge(self.segments, self.label, on='head')
         self.classes = ['N', 'A', 'O', '~']
@@ -49,11 +45,11 @@ class CINC2017Dataset(Dataset):
         return ecg, label
     
     
-    def _load_label(self, ann_dir):
+    def _load_label(self, root):
         '''
         read the label file and return the label dataframe
         '''
-        labels = pd.read_csv(ann_dir, header=None)
+        labels = pd.read_csv(os.path.join(root, 'REFERENCE-v3.csv'), header=None)
         labels.columns = ['head', 'label']
         label_dict = {'N': 0, 'A': 1, 'O': 2, '~': 3}
         labels = labels.replace(label_dict)
@@ -117,8 +113,7 @@ def load_cinc2017(batch_size, ratio=0.9, shuffle=True,
     '''
     split the dataset into train and valid and return the dataloader
     '''
-    dataset = CINC2017Dataset(root=root, ann_dir=ann_dir,
-                              seg=seg, stride=stride, sf=sf,
+    dataset = CINC2017Dataset(root=root, seg=seg, stride=stride, sf=sf,
                               transform=transform,
                               target_transform=target_transform)
     if ratio == 1:

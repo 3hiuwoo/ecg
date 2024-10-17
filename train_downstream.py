@@ -1,3 +1,9 @@
+'''
+run this script to train a supervised model.
+use python train_downstream.py --help/-h to get argument information.
+remember to specify the LOGDIR which is used for tensorboard and the
+SAVEPATH to save the model, also BBROOT to read the pretrained model.
+'''
 import utils.transform as transform
 import warnings
 from torch import nn
