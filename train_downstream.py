@@ -28,6 +28,7 @@ if __name__ == '__main__':
     learning_rate = opt.learning_rate
     set_seed(opt.seed)
     load_fn = load_dataset(opt.dataset)
+    data_root = opt.dataroot
     model = load_model(opt.model, 'supervised')
     log_dir = opt.logdir
     save_path = opt.savepath
@@ -36,7 +37,7 @@ if __name__ == '__main__':
     
     init_model(model, root)
     
-    train_iter, valid_iter = load_fn(batch_size=batch_size, 
+    train_iter, valid_iter = load_fn(batch_size=batch_size, root=data_root,
                                      transform=transform.ToTensor())
 
     loss_fn = nn.CrossEntropyLoss()

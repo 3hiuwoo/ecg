@@ -29,6 +29,7 @@ if __name__ == '__main__':
     learning_rate = opt.learning_rate
     set_seed(opt.seed)
     load_fn = load_dataset(opt.dataset)
+    data_root = opt.dataroot
     model = load_model(opt.model, 'predictive')
     log_dir = opt.logdir
     save_path = opt.savepath
@@ -43,7 +44,8 @@ if __name__ == '__main__':
     trans = Compose([transform.ToGroup(tranls), transform.ToTensor()])
 
     # no need for validation set
-    train_iter, _ = load_fn(batch_size=batch_size, transform=trans)
+    train_iter, _ = load_fn(batch_size=batch_size, root=data_root,
+                            transform=trans)
  
     loss_fn = nn.CrossEntropyLoss()
 

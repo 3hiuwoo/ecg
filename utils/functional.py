@@ -8,6 +8,7 @@ from torch import nn
 from torch.utils.tensorboard import SummaryWriter
 from tqdm import tqdm
 
+
 def get_device():
     '''
     find the available device
@@ -76,6 +77,8 @@ def get_options(transfer=False):
                         help='save the model every CHECK epochs')
     parser.add_argument('--dataset', type=str, default='cinc2017',
                         help='dataset used for training')
+    parser.add_argument('--dataroot', type=str, default='training2017',
+                        help='path of the dataset')
     parser.add_argument('--model', type=str, default='conv',
                         help='model used for training')
     parser.add_argument('--logdir', type=str, required=True,
