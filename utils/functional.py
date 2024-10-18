@@ -90,6 +90,8 @@ def get_options(transfer=False):
     if transfer:
         parser.add_argument('--bbroot', type=str, required=True,
                             help='path of pretrained model')
+        parser.add_argument('--all', action='store_true',
+                            help='unfreeze the backbone')
     
     return parser.parse_args()
     

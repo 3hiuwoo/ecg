@@ -34,6 +34,7 @@ if __name__ == '__main__':
     save_path = opt.savepath
     resume = opt.resume
     root = opt.bbroot
+    isAll = opt.all
     
     init_model(model, root)
     
@@ -42,7 +43,10 @@ if __name__ == '__main__':
 
     loss_fn = nn.CrossEntropyLoss()
 
-    optimizer = optim.Adam(model.classifier.parameters(), lr=learning_rate)
+    if isAll:
+        optimizer = optim.Adam(model.parameters(), lr=learning_rate)
+    else:
+        optimizer = optim.Adam(model.classifier.parameters(), lr=learning_rate)
 
     train_supervised(model, train_iter, valid_iter, optimizer, loss_fn, epochs,
           log_dir, save_path, resume=resume)

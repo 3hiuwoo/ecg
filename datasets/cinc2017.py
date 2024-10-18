@@ -106,8 +106,7 @@ class CINC2017Dataset(Dataset):
         self.data.to_csv(root)
         
 
-def load_cinc2017(batch_size, ratio=0.9, shuffle=True,
-                  root='training2017', ann_dir='data/REFERENCE-v3.csv',
+def load_cinc2017(batch_size, ratio=0.9, shuffle=True, root='training2017',
                   seg=10, stride=5, sf=300,
                   transform=None, target_transform=None):
     '''
