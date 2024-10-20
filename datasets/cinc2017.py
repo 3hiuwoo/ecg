@@ -106,7 +106,7 @@ class CINC2017Dataset(Dataset):
         self.data.to_csv(root)
         
 
-def load_cinc2017(batch_size, ratio=0.9, shuffle=True, root='training2017',
+def load_cinc2017(batch_size, ratio=0.8, shuffle=True, root='training2017',
                   seg=10, stride=5, sf=300,
                   transform=None, target_transform=None):
     '''
@@ -120,14 +120,17 @@ def load_cinc2017(batch_size, ratio=0.9, shuffle=True, root='training2017',
         return train_iter, None
     
     train_size = int(ratio * len(dataset))
-    valid_size = len(dataset) - train_size
-    train_dataset, valid_dataset = random_split(
-        dataset,[train_size, valid_size])
+    remain = len(dataset) - train_size
+    test_size = remain // 2
+    valid_size = remain - test_size
+    train_dataset, valid_dataset, test_dataset =\
+        random_split(dataset, [train_size, valid_size, test_size])
     
     train_iter = DataLoader(train_dataset, batch_size=batch_size, shuffle=shuffle)
     valid_iter = DataLoader(valid_dataset, batch_size=batch_size, shuffle=shuffle)
+    test_iter = DataLoader(test_dataset, batch_size=batch_size, shuffle=shuffle)
     
-    return train_iter, valid_iter
+    return train_iter, valid_iter, test_iter
     
     
 def get_cinc2017_class(label, one_hot=False):

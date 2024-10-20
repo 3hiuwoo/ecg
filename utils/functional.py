@@ -34,12 +34,21 @@ def set_seed(seed):
         torch.backends.cudnn.benchmark = False
 
 
-def init_weights(m):
+def init_model(model, root=None):
     '''
     initialize the weights of the model
     '''
-    if type(m) == nn.Conv1d or type(m) == nn.Linear:
-        nn.init.xavier_uniform_(m.weight)
+    def init_weights(m):
+        if type(m) == nn.Conv1d or type(m) == nn.Linear:
+            nn.init.xavier_uniform_(m.weight)
+    
+    if root:
+        weights = torch.load(root, map_location=get_device())
+        model.backbone.load_state_dict(weights['backbone_state_dict'])
+        model.classifier.apply(init_weights)
+    else:
+        model.apply(init_weights)
+        
             
             
 def get_pseudo_label(batch_size, num_tran):
@@ -127,6 +136,9 @@ class Visualizer:
 class Logger:
     '''
     manage multiple checkpoints
+    
+    Args:
+        log_dir(str): the directory to save the checkpoints
     '''
     def __init__(self, log_dir):
         if not os.path.exists(log_dir):
@@ -162,7 +174,4 @@ class Logger:
         return latest
         
         
-def init_model(model, root):
-    weights = torch.load(root, map_location=get_device())
-    model.backbone.load_state_dict(weights['backbone_state_dict'])
-    model.classifier.apply(init_weights)
+    
