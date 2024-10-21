@@ -1,7 +1,7 @@
 import torch
 from tqdm import tqdm
 from torchmetrics import MeanMetric, Accuracy, F1Score, MetricCollection
-from utils.functional import get_device, Visualizer, Logger, get_pseudo_label
+from .functional import get_device, Visualizer, Logger, get_pseudo_label
 
 
 def train_epoch_supervised(model, train_iter, optimizer, loss_fn, metrics,
@@ -50,6 +50,8 @@ def valid_epoch_supervised(model, valid_iter, metrics, epoch, epochs, device):
     '''
     validate the model for one epoch under supervised learning paradigm
     
+    if epochs is 0, the function is used for testing on the test set
+    
     argument ''metrics'' is a tuple of arbitrary metrics defined outside the
     function, such as accuracy and f1
     '''
@@ -57,9 +59,14 @@ def valid_epoch_supervised(model, valid_iter, metrics, epoch, epochs, device):
     
     acc, f1 = metrics
     
+    # check whether it is testing or validating
+    if epochs == 0:
+        desc = 'Testing'
+    else:
+        desc = f"Epoch [{epoch+1}/{epochs}] validating"
     with torch.no_grad():
         # initialize the progress bar
-        vbar = tqdm(valid_iter, desc=f"Epoch [{epoch+1}/{epochs}] validating")
+        vbar = tqdm(valid_iter, desc=desc)
         for X, y in vbar:
             X, y = X.to(device), y.to(device)
             pred = model(X)
@@ -133,7 +140,7 @@ def train_supervised(model, train_iter, valid_iter, optimizer, loss_fn, epochs,
     print('Training finished')
     
     
-def train_predictive_epoch(model, train_iter, optimizer, loss_fn, trans, metrics,
+def train_epoch_predictive(model, train_iter, optimizer, loss_fn, trans, metrics,
                            weights, epoch, epochs, device):
     '''
     train the model for one epoch under predictive pretext task SSL paradigm
@@ -219,7 +226,7 @@ def train_predictive(model, train_iter, trans_name, optimizer, loss_fn, epochs,
     
     # training process
     for epoch in range(start_epoch+1, epochs):
-        total_loss, total_acc, total_f1 = train_predictive_epoch(model,
+        total_loss, total_acc, total_f1 = train_epoch_predictive(model,
                                         train_iter, optimizer, loss_fn,
                                         trans_name, (loss, acc, f1), weights,
                                         epoch, epochs, device)

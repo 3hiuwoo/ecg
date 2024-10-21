@@ -12,14 +12,14 @@ from torchvision.transforms import Compose
 from datasets.load import load_dataset
 from models.load import load_model
 from utils.trainer import train_predictive
-from utils.functional import get_options, set_seed, init_model
+from utils.functional import get_train_options, set_seed, init_model
 
 
 if __name__ == '__main__':
     # ignore trivial warnings
     warnings.filterwarnings("ignore")
 
-    opt = get_options()
+    opt = get_train_options()
     
     # by default use a batch size of 128, 100 epochs, and a learning rate of
     # 0.001, and set the random seed to 42, use the cinc2017 dataset, and the
@@ -44,7 +44,7 @@ if __name__ == '__main__':
     trans = Compose([transform.ToGroup(tranls), transform.ToTensor()])
 
     # no need for validation set
-    train_iter, _ = load_fn(batch_size=batch_size, root=data_root,
+    train_iter, _, _ = load_fn(batch_size=batch_size, root=data_root,
                             transform=trans)
  
     loss_fn = nn.CrossEntropyLoss()

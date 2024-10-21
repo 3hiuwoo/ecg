@@ -1,6 +1,6 @@
 import torch
 from torch import nn
-from models.base import conv_backbone, classifier
+from .base import conv_backbone, classifier
 
 
 class SSLConvPred(nn.Module):

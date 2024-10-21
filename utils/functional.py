@@ -34,7 +34,7 @@ def set_seed(seed):
         torch.backends.cudnn.benchmark = False
 
 
-def init_model(model, root=None):
+def init_model(model, root=None, test=False):
     '''
     initialize the weights of the model
     '''
@@ -45,7 +45,10 @@ def init_model(model, root=None):
     if root:
         weights = torch.load(root, map_location=get_device())
         model.backbone.load_state_dict(weights['backbone_state_dict'])
-        model.classifier.apply(init_weights)
+        if test:
+            model.classifier.load_state_dict(weights['classifier_state_dict'])
+        else:
+            model.classifier.apply(init_weights)
     else:
         model.apply(init_weights)
         
@@ -68,9 +71,9 @@ def get_pseudo_label(batch_size, num_tran):
     return pseudo_label.repeat(1, batch_size, 1).argmax(-1)
 
 
-def get_options(transfer=False):
+def get_train_options(transfer=False):
     '''
-    fetch the arguments from the terminal
+    fetch the arguments from the terminal for training scripts
     '''
     parser = argparse.ArgumentParser(description='training settings')
     
@@ -104,6 +107,27 @@ def get_options(transfer=False):
     
     return parser.parse_args()
     
+    
+def get_test_options():
+    '''
+    fetch the arguments from the terminal for testing script
+    '''
+    parser = argparse.ArgumentParser(description='testing settings')
+    
+    parser.add_argument('--batch_size', type=int, default=128,
+                        help='testing batch size')
+    parser.add_argument('--seed', type=int, default=42,
+                        help='set random seed')
+    parser.add_argument('--dataset', type=str, default='cinc2017',
+                        help='dataset used for training')
+    parser.add_argument('--dataroot', type=str, default='training2017',
+                        help='path of the dataset')
+    parser.add_argument('--model', type=str, default='conv',
+                        help='model used for training')
+    parser.add_argument('--modelroot', type=str, required=True,
+                        help='path of the saved model')
+    
+    return parser.parse_args()
                         
 
 class Visualizer:
